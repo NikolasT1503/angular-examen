@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Create new comment</h2>
+<div mat-dialog-content>
+  <p>Добавьте комментарий</p>
+  <mat-form-field>
+    <input matInput [(ngModel)]="comment">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="primary" (click)="addComment()" mat-dialog-close cdkFocusInitial>
+    Save
+  </button>
+  <button mat-raised-button color="warn" (click)="closeIssue()"   mat-dialog-close>
+    Close
+  </button>
+</div>

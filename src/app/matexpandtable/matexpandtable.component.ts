@@ -6,21 +6,29 @@ import {
   trigger,
 } from '@angular/animations';
 import { DatePipe } from '@angular/common';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import {
   AfterViewInit,
   Component,
+  Inject,
   OnChanges,
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { GitServiceService } from '../githttp.service';
-import { Issue, Issues } from '../issue.interface';
-import { MatTableDataSource } from '@angular/material/table';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
-import { HrefAddPipe } from '../href-add.pipe';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { MatTableDataSource } from '@angular/material/table';
 import { GitauthInterceptor } from '../gitauth.interceptor';
+import { GitServiceService } from '../githttp.service';
+import { HrefAddPipe } from '../href-add.pipe';
+import { Issue, Issues } from '../issue.interface';
+import { DialogOverviewExampleDialog } from './dialog-overview-dialog.component';
+
+export interface DialogData {
+  title: string;
+  body: string;
+}
 
 @Component({
   selector: 'app-mattable',
@@ -46,28 +54,36 @@ import { GitauthInterceptor } from '../gitauth.interceptor';
     },
   ],
 })
-export class MatexpandtableComponent
-  implements OnInit, OnChanges, AfterViewInit {
+export class MatexpandtableComponent implements OnInit, OnChanges, AfterViewInit {
+  
   issues;
   dataSource;
+  title;
+  body;
+  comment;
+
   columnsToDisplay: string[] = [
+    'id',
     'state',
     'created_at',
     'title',
-    'user'
+    'body',
+    'user',
   ];
-  /* columnsToDisplay = ['state', 'created_at', 'title', 'url']; */
+  
   expandedElement: Issue[] | null;
   @ViewChild(MatSort) sort: MatSort;
 
   form: FormGroup;
   issuesFormArray: FormArray;
 
+  addCommentfb: FormBuilder;
+
   constructor(
     public gitServ: GitServiceService,
     private fb: FormBuilder,
     private datepipe: DatePipe,
-    private hrefpipe: HrefAddPipe
+    public dialog: MatDialog
   ) {}
 
   viewIssues() {
@@ -75,10 +91,6 @@ export class MatexpandtableComponent
       this.issues = data;
       console.log(this.issues);
     });
-  }
-
-  createIssue() {
-    this.gitServ.createIssue();
   }
 
   ngOnInit(): void {
@@ -95,6 +107,7 @@ export class MatexpandtableComponent
         this.issuesFormArray.insert(
           index,
           this.fb.group({
+            id: this.fb.control(issue.number, Validators.required),
             state: this.fb.control(issue.state, Validators.required),
             created_at: this.fb.control(
               this.datepipe.transform(
@@ -106,11 +119,14 @@ export class MatexpandtableComponent
             title: this.fb.control(issue.title, Validators.required),
             url: this.fb.control(issue.url, Validators.required),
             user: this.fb.control(issue.user.login, Validators.required),
-/*             userAvatar: this.fb.control(
+            /*             userAvatar: this.fb.control(
               this.hrefpipe.transform(issue.user.avatar_url),
               Validators.required
             ), добавить валидатор на это который добавляет ссылку */
-            userAvatar: this.fb.control(issue.user.avatar_url, Validators.required),
+            userAvatar: this.fb.control(
+              issue.user.avatar_url,
+              Validators.required
+            ),
             body: this.fb.control(issue.body, Validators.required),
           })
         )
@@ -140,9 +156,7 @@ export class MatexpandtableComponent
     });
   }
 
-  ngOnChanges() {
-
-  }
+  ngOnChanges() {}
 
   ngAfterViewInit() {}
 
@@ -151,11 +165,52 @@ export class MatexpandtableComponent
     this.dataSource.filter = filterValue;
   }
 
-  loadComment(i){
+  loadComments(id_issue: number) {
+    this.gitServ.getIssueComments(id_issue.toString());
+  }
+
+  closeIssue(id: any) {
+    this.dialog.open(AddCommentDialog1, {
+      data: id,
+    });
 
   }
 
-  deleteUser(i){
+  addComment(id: any) {
+      this.dialog.open(AddCommentDialog1, {
+        data: id,
+      });
+  }
+
+  openDialog() {
+    const dialogRef = this.dialog.open(DialogOverviewExampleDialog);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+    });
+  }
+}
+
+
+@Component({
+  selector: 'add-dialog.component',
+  templateUrl: 'add-comment-dialog.html',
+})
+export class AddCommentDialog1 {
+  comment: string;
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public issue_number: number,
+    public gitService: GitServiceService
+  ) {}
+
+  addComment() {
+    console.log('Добавление коммента', this.issue_number.toString(), this.comment);
+    this.gitService.createIssueComment(this.issue_number.toString(), this.comment);
     
+  }
+
+  closeIssue() {
+    this.gitService.closeIssue(this.issue_number.toString());
   }
 }

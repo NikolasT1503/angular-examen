@@ -3,6 +3,9 @@
         <mat-label>Filter</mat-label>
         <input matInput (keyup)="filterFunction($event)" placeholder="Filter" #input />
     </mat-form-field>
+    <button mat-fab color="primary" aria-label="Создать issue" (click)="openDialog()">
+        <mat-icon>add</mat-icon>
+    </button>
     <ng-container formArrayName="issues">
         <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8" matSort>
             <ng-container matColumnDef="{{ column }}" *ngFor="let column of columnsToDisplay">
@@ -18,36 +21,44 @@
 
             <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
             <ng-container matColumnDef="expandedDetail">
-                <td mat-cell *matCellDef="let element; let i=index" [formGroup]="element" [attr.colspan]="columnsToDisplay.length">
+                <td mat-cell *matCellDef="let element; let i=index" [formGroup]="element"
+                    [attr.colspan]="columnsToDisplay.length">
                     <div class="example-element-detail"
                         [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
                         <div>
+                            <button mat-mini-fab color="accent" (click)="addComment(element.value['id'])">
+                                <mat-icon>add_box</mat-icon>
+                            </button>
+                            <button mat-mini-fab color="black" (click)="closeIssue(element.value['id'])">
+                                <mat-icon>delete</mat-icon>
+                            </button>
                             <!-- <div class="example-element-position">{{ element.value['userAvatar'] | hrefAdd }}</div> -->
+                            <!--                             <button (click)="loadComments(element.value['id'])">Загрузить комментарии</button>
                             <table class="innertable">
                                 <tr>
-                                    <th>Тело Issue</th>
                                     <th>Комментарий</th>
-                                    <th>Кнопки</th>
+                                    <th>Дата</th>
+                                    <th>Действия</th>
                                 </tr>
                                 <tr>
-                                    <td>{{element.value['body']}}</td>
+                                    <td></td>
                                     <td></td>
                                     <td>                  
-                                        <button mat-mini-fab color="accent" (click)="loadComment(i)">
+                                        <button mat-mini-fab color="accent" (click)="closeComment(i)">
                                             <mat-icon>add</mat-icon>
                                         </button>
-                                        <button mat-mini-fab color="black" (click)="deleteUser(i)">
+                                        <button mat-mini-fab color="black" (click)="addComment(i)">
                                             <mat-icon>delete</mat-icon>
                                         </button>
                                     </td>
                                 </tr>
                             </table>    
-
+ -->
                             <!-- <div class="example-element-position"><a [href]="element.value['userAvatar']"><img width=50 height=50 src="https://avatars.githubusercontent.com/u/4584584?v=4"> </a> -->
 
                         </div>
                     </div>
- <!--                    <div class="example-element-position">{{ element.value['userIssue'] }}</div>
+                    <!--                    <div class="example-element-position">{{ element.value['userIssue'] }}</div>
                     <div class="example-element-symbol">
                         {{ element.created_at | date: "dd.mm.yyyy HH:mm" }}
                     </div>
@@ -78,6 +89,4 @@
             <pre>{{ issue.user.login }}, {{ issue.user.url }}</pre>
         </td>
     </tr>
-
-    <button (click)="createIssue()">создать issue</button>
 </table>

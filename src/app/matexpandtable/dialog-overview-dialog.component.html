@@ -1,0 +1,72 @@
+<h2 mat-dialog-title>Create new issue</h2>
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="issueSendForm">
+    <mat-accordion>
+        <p>
+          <label>Название</label>
+          <input type="text" formControlName="title" />
+        </p>
+    </mat-accordion>
+    <p>
+      <label>Описание</label>
+      <input type="text" formControlName="body" />
+    </p>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="resetForm()">Clear</button>
+  <button mat-button mat-dialog-close>Cancel</button>
+
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="send()"
+    mat-dialog-close
+    cdkFocusInitial
+  >
+    Save
+  </button>
+</mat-dialog-actions>
+
+
+<!-- <h2 mat-dialog-title>Create new issue</h2>
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="issueSendForm">
+    <mat-accordion>
+      <mat-expansion-panel hideToggle>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Добавить заголовок</mat-panel-title>
+        </mat-expansion-panel-header>
+        <p>
+          <label>Название</label>
+          <input type="text" formControlName="title" />
+        </p>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel
+        (opened)="panelOpenState = true"
+        (closed)="panelOpenState = false"
+      >
+      </mat-expansion-panel>
+    </mat-accordion>
+    <p>
+      <label>Описание</label>
+      <input type="text" formControlName="body" />
+    </p>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="resetForm()">Clear</button>
+  <button mat-button mat-dialog-close>Cancel</button>
+
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="send()"
+    mat-dialog-close
+    cdkFocusInitial
+  >
+    Save
+  </button>
+</mat-dialog-actions>
+ -->

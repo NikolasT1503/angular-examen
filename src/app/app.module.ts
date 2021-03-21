@@ -1,19 +1,20 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { MatexpandtableComponent } from './matexpandtable/matexpandtable.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatTable } from '@angular/material/table';
-import { MaterialModule } from './material-module';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NavbarComponent } from './navbar.component';
-import { Comp404Component } from './comp404/comp404.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { GitauthInterceptor } from './gitauth.interceptor';
 import { ButtonAddPipe } from './button-add.pipe';
+import { Comp404Component } from './comp404/comp404.component';
 import { HrefAddPipe } from './href-add.pipe';
+import { MaterialModule } from './material-module';
+import { DialogOverviewExampleDialog } from './matexpandtable/dialog-overview-dialog.component';
+import {
+  AddCommentDialog1,
+  MatexpandtableComponent,
+} from './matexpandtable/matexpandtable.component';
+import { NavbarComponent } from './navbar.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,9 @@ import { HrefAddPipe } from './href-add.pipe';
     NavbarComponent,
     Comp404Component,
     ButtonAddPipe,
-    HrefAddPipe
+    HrefAddPipe,
+    DialogOverviewExampleDialog,
+    AddCommentDialog1,
   ],
   imports: [
     BrowserModule,
@@ -33,9 +36,7 @@ import { HrefAddPipe } from './href-add.pipe';
     FormsModule,
     ReactiveFormsModule,
   ],
-  providers: [
-
-  ],
-  bootstrap: [AppComponent]
+  providers: [],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,5 +1,5 @@
 export interface Issue {
-  id: number;
+  number: number;
   state: string;
   created_at: Date;
   title: string;
@@ -12,3 +12,4 @@ export interface Issue {
   };
 }
 export type Issues = Issue[];
+
