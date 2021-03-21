@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GithttpService } from './githttp.service';
+import { GitServiceService } from './githttp.service';
 
 describe('GithttpService', () => {
-  let service: GithttpService;
+  let service: GitServiceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(GithttpService);
+    service = TestBed.inject(GitServiceService);
   });
 
   it('should be created', () => {

@@ -6,9 +6,9 @@ import { Issues } from './issue.interface';
 import { FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
 
-const token = 'd6335fe75487e55f1aef6e5ab2989968706a8aa0';
+const token = 'e7340cfd1139794514d14db21e53bbfa7eeae512';
 const owner = 'NikolasT1503';
-const reponame = 'angular-lecture13-tests';
+const reponame = 'angular-examen';
 
 
 @Injectable({
@@ -19,8 +19,25 @@ export class GitServiceService {
   constructor(private httpclient: HttpClient) {
   }
 
+  //https://github.com/NikolasT1503/angular-examen/issues/3
+
   getIssues() {
-    const url = 'https://api.github.com/repos/NikolasT1503/angular-lecture13-tests/issues';
+    const url = 'https://api.github.com/repos/NikolasT1503/angular-examen/issues';
     return this.httpclient.get(url);
+  }
+
+  createIssue() {
+    const options = {
+      headers: new HttpHeaders().append('Authorization', 'Basic ' + btoa(owner + ':' + token)),
+    }
+
+    this.httpclient.post('https://api.github.com/repos/NikolasT1503/angular-examen/issues', {
+      owner: owner,
+      repo: reponame,
+      title: 'Проверка',
+      body: 'Проверка body'
+    }, options).subscribe((issue) =>{
+      console.log(issue)
+    });
   }
 }

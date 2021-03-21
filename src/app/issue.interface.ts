@@ -1,4 +1,5 @@
 export interface Issue {
+  id: number;
   state: string;
   created_at: Date;
   title: string;
@@ -7,6 +8,7 @@ export interface Issue {
   user: {
     login: string;
     url: string;
+    avatar_url: string;
   };
 }
 export type Issues = Issue[];

@@ -6,12 +6,21 @@ import {
   trigger,
 } from '@angular/animations';
 import { DatePipe } from '@angular/common';
-import { AfterViewInit, Component, OnChanges, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnChanges,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { GitServiceService } from '../githttp.service';
 import { Issue, Issues } from '../issue.interface';
 import { MatTableDataSource } from '@angular/material/table';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSort } from '@angular/material/sort';
+import { HrefAddPipe } from '../href-add.pipe';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { GitauthInterceptor } from '../gitauth.interceptor';
 
 @Component({
   selector: 'app-mattable',
@@ -27,19 +36,25 @@ import { MatSort } from '@angular/material/sort';
       ),
     ]),
   ],
-  providers: [DatePipe],
+  providers: [
+    DatePipe,
+    HrefAddPipe,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: GitauthInterceptor,
+      multi: true,
+    },
+  ],
 })
-export class MatexpandtableComponent implements OnInit, OnChanges, AfterViewInit {
+export class MatexpandtableComponent
+  implements OnInit, OnChanges, AfterViewInit {
   issues;
   dataSource;
   columnsToDisplay: string[] = [
     'state',
     'created_at',
     'title',
-/*     'url',
-    'userIssue',
-    'body', */
-    'actions',
+    'user'
   ];
   /* columnsToDisplay = ['state', 'created_at', 'title', 'url']; */
   expandedElement: Issue[] | null;
@@ -51,7 +66,8 @@ export class MatexpandtableComponent implements OnInit, OnChanges, AfterViewInit
   constructor(
     public gitServ: GitServiceService,
     private fb: FormBuilder,
-    private datepipe: DatePipe
+    private datepipe: DatePipe,
+    private hrefpipe: HrefAddPipe
   ) {}
 
   viewIssues() {
@@ -60,12 +76,16 @@ export class MatexpandtableComponent implements OnInit, OnChanges, AfterViewInit
       console.log(this.issues);
     });
   }
+
+  createIssue() {
+    this.gitServ.createIssue();
+  }
+
   ngOnInit(): void {
     /* this.viewIssues(); */
     /* this.gitServ.getIssues().subscribe((issuesData: Issue[]) => {
       this.dataSource = issuesData;
     }); */
-
     this.gitServ.getIssues().subscribe((issues: Issues) => {
       this.form = this.fb.group({
         issues: this.fb.array([]),
@@ -77,25 +97,30 @@ export class MatexpandtableComponent implements OnInit, OnChanges, AfterViewInit
           this.fb.group({
             state: this.fb.control(issue.state, Validators.required),
             created_at: this.fb.control(
-              this.datepipe.transform(issue.created_at, 'dd-MM-yyyy hh:mm:ss ZZZZ'),
+              this.datepipe.transform(
+                issue.created_at,
+                'dd-MM-yyyy hh:mm:ss ZZZZ'
+              ),
               Validators.required
             ),
             title: this.fb.control(issue.title, Validators.required),
             url: this.fb.control(issue.url, Validators.required),
-            userIssue: this.fb.control(issue.user.login, Validators.required),
+            user: this.fb.control(issue.user.login, Validators.required),
+/*             userAvatar: this.fb.control(
+              this.hrefpipe.transform(issue.user.avatar_url),
+              Validators.required
+            ), добавить валидатор на это который добавляет ссылку */
+            userAvatar: this.fb.control(issue.user.avatar_url, Validators.required),
             body: this.fb.control(issue.body, Validators.required),
           })
         )
       );
-
       this.dataSource = new MatTableDataSource(this.issuesFormArray.controls);
+
       this.dataSource.filterPredicate = (row, filter) => {
         console.log(row, filter);
         const issue = row.value as Issue;
-        console.log(
-          'проверка return',
-          issue.state + ' | ' + issue.title + ' | ' + issue.url
-        );
+
         return (
           issue.state
             .trim()
@@ -115,14 +140,22 @@ export class MatexpandtableComponent implements OnInit, OnChanges, AfterViewInit
     });
   }
 
-  ngOnChanges(){}
+  ngOnChanges() {
 
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
   }
+
+  ngAfterViewInit() {}
 
   filterFunction(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue;
+  }
+
+  loadComment(i){
+
+  }
+
+  deleteUser(i){
+    
   }
 }
